@@ -1,39 +1,36 @@
-name: Java CI/CD
+name: Java Hello World
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    paths:
+      - '**.java'
+      - '.github/workflows/**'
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-run:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Create HelloWorld.java
+        run: |
+          echo 'public class HelloWorld {
+              public static void main(String[] args) {
+                  System.out.println("Hello, world!");
+              }
+          }' > HelloWorld.java
 
-      - name: Run tests
-        run: mvn test
+      - name: Compile with JDK
+        run: javac HelloWorld.java
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Deploy to production (placeholder)
-        run: echo "Deploying Java application..."
-        
+      - name: Run with JRE
+        run: java HelloWorld
